@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
     if (success) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login successful ✅')),
+        const SnackBar(content: Text('Login successful')),
       );
       // Navigate to the home page.
       Navigator.of(context).push(
@@ -117,10 +117,11 @@ class _LoginPageState extends State<LoginPage> {
                           child: Center(
                             child: Image.asset(
                               'assets/logo.png',
-                              width: 120,
+                              width: 200,
                             ),
                           ),
                         ),
+                        const SizedBox(height: 24),
 
                         // Username field
                         TextFormField(
