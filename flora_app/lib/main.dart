@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
+import 'login_page.dart';
 
+// This function runs the app.
 void main() {
-  //This function runs the APP
-  runApp(MaterialApp(
-    home: Scaffold(
-      appBar: AppBar(
-        title: Text('FloRa App'),
-        centerTitle: true,
+  runApp(const FloRaApp());
+}
+
+/// The root widget of the application.
+class FloRaApp extends StatelessWidget {
+  /// Creates a [FloRaApp].
+  const FloRaApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'FloRa App',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        useMaterial3: true,
       ),
-      body: Center(
-          child: Text("hello Gea")
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Text("Click"),
-      ),
-    ),
-  ));
+      home: const LoginPage(),
+    );
+  }
 }
