@@ -1,24 +1,24 @@
-// Reads a photoresistor on A0 and prints values 0–1023.
-// Higher = brighter.
-
+#include <Arduino.h>
 #include "LightSensor.h"
-const int sensorPin = A1;
-int sensorValue = 0;
+#include "SoilMoistureSensor.h"
 
-LightSensor sensor(A0, 10);  // use analog pin A0, average 10 samples
+// Initialize sensors
+LightSensor lightSensor(A0, 10);         // pin A0, average 10 samples
+SoilMoistureSensor soilSensor(A1, 10);   // pin A1, average 10 samples
 
 void setup() {
   Serial.begin(9600);
+  Serial.println("Sensor Test gestartet...");
 }
 
 void loop() {
-  int reading = sensor.readAverage();  // get a stable light value
-  Serial.print("Light_reading: ");
-  Serial.println(reading);             // send it to Serial Monitor
-  delay(2000);             
+  int lightValue = lightSensor.readAverage();
+  int soilValue = soilSensor.readAverage();
 
-  sensorValue = analogRead(sensorPin);
-  Serial.print("Feuchtigkeitswert: ");
-  Serial.println(sensorValue);
-  delay(1000);             
+  Serial.print("Lichtwert: ");
+  Serial.print(lightValue);
+  Serial.print(" | Feuchtigkeitswert: ");
+  Serial.println(soilValue);
+
+  delay(2000);
 }
