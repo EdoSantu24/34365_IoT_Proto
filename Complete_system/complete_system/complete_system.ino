@@ -22,7 +22,6 @@ SoilMoistureSensor soilSensor(SOIL_PIN, 10);     // pin A1, average 10 samples
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("🌡️🌿 Multi Sensor System gestartet!");
 
   // Initialize DHT11 sensor
   DHTSensor_Init();
@@ -37,27 +36,27 @@ void loop() {
   // -------------------------------
   DHTData dhtData = DHTSensor_Read();
   if (dhtData.valid) {
-    Serial.print("🌡️ Temperatur: ");
+    Serial.print("Temperature: ");
     Serial.print(dhtData.temperature);
-    Serial.print(" °C | 💧 Luftfeuchtigkeit: ");
+    Serial.print(" °C | Humidity: ");
     Serial.print(dhtData.humidity);
     Serial.println(" %");
   } else {
-    Serial.println("❌ Fehler beim Lesen des DHT11!");
+    Serial.println("Problem while reading sensor DHT11!");
   }
 
   // -------------------------------
   // Read Light Sensor
   // -------------------------------
   int lightValue = lightSensor.readAverage();
-  Serial.print("💡 Lichtwert: ");
+  Serial.print("Brightness: ");
   Serial.println(lightValue);
 
   // -------------------------------
   // Read Soil Moisture Sensor
   // -------------------------------
   int soilValue = soilSensor.readAverage();
-  Serial.print("🌱 Bodenfeuchtigkeit: ");
+  Serial.print("Soil moisture: ");
   Serial.println(soilValue);
 
   Serial.println("----------------------------------");
