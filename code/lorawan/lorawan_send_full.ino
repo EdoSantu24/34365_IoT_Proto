@@ -1,9 +1,11 @@
 /*
  * Based on code by JP Meijers, 2016
- * Modified for DHT11 Sensor Integration
+ * Modified for modular sensor reading and sending.
  *
- * This program sends temperature and humidity data from a DHT11
- * sensor via LoRaWAN (TTN).
+ * This program demonstrates:
+ * - Reading sensor data in the main loop()
+ * - Passing data as parameters to a dedicated send function
+ * - Now sends a 5-byte payload
  *
  * Hardware:
  * - Arduino Pro-Mini
@@ -15,7 +17,7 @@
  * Uart TX -- 10 (SoftwareSerial RX)
  * Uart RX -- 11 (SoftwareSerial TX)
  * Reset   -- 12
- * Vcc     -- 3.3V (Note: RN2483A is 3.3V logic)
+ * Vcc     -- 3.3V
  * Gnd     -- Gnd
  *
  * DHT11 -- Arduino
@@ -58,7 +60,7 @@ void setup()
   initialize_radio();
 
   //transmit a startup message
-  myLora.tx("Smart Plant Monitor Start");
+  myLora.tx("Smart Plant Monitor Start (Refactored 5-byte)");
 
   led_off();
 }
@@ -127,53 +129,70 @@ void initialize_radio()
 
 }
 
-// the loop routine runs over and over again forever:
-void loop()
+// New function to handle ONLY sending data.
+// It receives the processed sensor data as parameters.
+void sendSensorData(uint8_t humidity, int8_t temperature, uint8_t soil, uint8_t light, uint8_t battery)
 {
   led_on();
 
-  // Reading temperature or humidity takes about 250 milliseconds!
-  // Sensor readings may also be up to 2 seconds old (its a very slow sensor)
-  float h = dht.readHumidity();
-  // Read temperature as Celsius (the default)
-  float t = dht.readTemperature();
-
-  // Check if any reads failed and exit early (to try again).
-  if (isnan(h) || isnan(t)) {
-    Serial.println(F("Failed to read from DHT sensor!"));
-    led_off();
-    delay(5000); // Wait 5 seconds before retrying
-    return; // Exit loop and try again
-  }
-
   // --- Payload Preparation ---
-  // We will send 2 bytes:
-  // Byte 0: Humidity (as a rounded integer, 0-100)
-  // Byte 1: Temperature (as a rounded integer, can be negative)
+  // This function just packages and sends the data it was given.
+  // Payload is now 5 bytes.
+  byte payload[5]; 
   
-  byte payload[2];
-  
-  // Use (uint8_t) for humidity, as it's always positive (0-100)
-  payload[0] = (uint8_t)h; 
-  // Use (int8_t) for temperature, as it can be negative (-128 to 127)
-  payload[1] = (int8_t)t; 
+  payload[0] = humidity; 
+  payload[1] = temperature; 
+  payload[2] = soil;
+  payload[3] = light;
+  payload[4] = battery; // Added battery
 
   Serial.print(F("Sending packet: Hum: "));
   Serial.print(payload[0]);
   Serial.print(F(" %, Temp: "));
   Serial.print(payload[1]);
-  Serial.println(F(" C"));
+  Serial.print(F(" C, Soil: "));
+  Serial.print(payload[2]);
+  Serial.print(F(" %, Light: "));
+  Serial.print(payload[3]);
+  Serial.print(F(" %, Battery: ")); // Added battery log
+  Serial.print(payload[4]);        // Added battery log
+  Serial.println(F(" %"));
 
   // Send the binary payload.
-  // Using txBytes is better than tx(String) for binary data.
-  // This is a blocking function.
   myLora.txBytes(payload, sizeof(payload)); 
 
   led_off();
+}
+
+// the loop routine runs over and over again forever:
+void loop()
+{
+  // 1. Read REAL sensor data (This logic will be in sensor.h)
+  float h_float = dht.readHumidity();
+  float t_float = dht.readTemperature();
+
+  // Check if any reads failed and exit early (to try again).
+  if (isnan(h_float) || isnan(t_float)) {
+    Serial.println(F("Failed to read from DHT sensor!"));
+    delay(5000); // Wait 5 seconds before retrying
+    return; // Skip this loop iteration
+  }
   
-  // IMPORTANT: Wait at least 60 seconds before sending again
-  // to respect TTN Fair Use Policy.
-  // The DHT11 sensor also needs >2 seconds between readings.
+  // 2. Read FAKE sensor data (This logic will also be in sensor.h)
+  // Here, we just create the fake data.
+  uint8_t fakeSoil = 50; // Fake soil moisture at 50%
+  uint8_t fakeLight = 75; // Fake light level at 75%
+  uint8_t fakeBattery = 95; // Fake battery level at 95%
+
+  // 3. Process/Prepare data for sending
+  // Convert floats to the one-byte format.
+  uint8_t humidity_int = (uint8_t)h_float;
+  int8_t temperature_int = (int8_t)t_float;
+  
+  // 4. Call the send function with the prepared data
+  sendSensorData(humidity_int, temperature_int, fakeSoil, fakeLight, fakeBattery);
+  
+  // 5. Wait for the next cycle
   delay(60000); 
 }
 
