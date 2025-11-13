@@ -5,12 +5,13 @@ import 'settings_page.dart';
 class PlantInfoCard extends StatelessWidget {
   final String plantName;
   final double temperature;
-  final int humidity1;
+  final double humidity1;
   final int humidity2;
   final int light;
   final int battery;
   final bool isDeviceOn;
   final ValueChanged<bool> onStatusChanged;
+  final VoidCallback? onReload;
 
   /// Creates a [PlantInfoCard].
   const PlantInfoCard({
@@ -23,6 +24,7 @@ class PlantInfoCard extends StatelessWidget {
     required this.battery,
     required this.isDeviceOn,
     required this.onStatusChanged,
+    this.onReload,
   });
 
   @override
@@ -64,7 +66,7 @@ class PlantInfoCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildInfoColumn('Temperature', '$temperature ºC'),
-                _buildInfoColumn('Humidity 1', '$humidity1 %'),
+                _buildInfoColumn('Humidity 1', '${humidity1.toStringAsFixed(1)} %'),
                 _buildInfoColumn('Humidity 2', '$humidity2 %'),
               ],
             ),
@@ -85,9 +87,7 @@ class PlantInfoCard extends StatelessWidget {
               children: [
                 IconButton(
                   icon: const Icon(Icons.refresh, color: Colors.white),
-                  onPressed: () {
-                    // TODO: Implement reload functionality
-                  },
+                  onPressed: onReload,
                   tooltip: 'Reload',
                 ),
                 IconButton(

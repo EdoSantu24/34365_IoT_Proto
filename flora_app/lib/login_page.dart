@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'signup_page.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 /// The login screen of the app.
 class LoginPage extends StatefulWidget {
