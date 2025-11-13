@@ -19,8 +19,12 @@ public:
   // Takes a reference to the already-initialized LoRa object.
   LoRaTransmitter(rn2xx3 &loraModule);
 
-  // Public function to send the 5-byte sensor payload
+  // Public function to send the 5-byte sensor payload (Operating Mode)
   void sendSensorData(uint8_t humidity, int8_t temperature, uint8_t soil, uint8_t light, uint8_t battery);
+
+  // New public function to send a 1-byte setup ping (Setup Mode)
+  // This function returns the downlink string, if any.
+  String sendSetupPing(uint8_t battery);
 
 private:
   rn2xx3 &_lora; // Private reference to the main LoRa object

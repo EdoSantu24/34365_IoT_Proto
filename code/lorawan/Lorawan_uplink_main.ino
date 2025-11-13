@@ -1,10 +1,9 @@
 /*
  * Smart Plant Monitor - Main Sketch
  *
- * This main file is now much cleaner. It handles:
- * - Initializing hardware (DHT, LoRa)
- * - Reading sensor data (real and fake)
- * - Calling the LoRaTransmitter library to send the data.
+ * This main file now has two modes:
+ * 1. Setup Mode (in setup()): Pings for a plant type.
+ * 2. Operating Mode (in loop()): Sends sensor data.
  */
 #include <rn2xx3.h>
 #include <SoftwareSerial.h>
@@ -15,6 +14,12 @@
 
 // Include our new custom library
 #include "LoRaTransmitter.h"
+
+// --- Global State ---
+// This variable controls our state.
+// 0 = Setup mode (needs plant type)
+// 1-4 = Operating mode (plant type is set)
+int plantType = 0;
 
 // --- Sensor Definitions ---
 #define DHTPIN 7       // Digital pin connected to the DHT sensor
@@ -30,10 +35,9 @@ rn2xx3 myLora(mySerial); // This is our main LoRa object
 // passing it the LoRa object it needs to use.
 LoRaTransmitter transmitter(myLora);
 
-// the setup routine runs once when you press reset:
+// the setup routine runs once when you press reset: it stay in a loop until it gets plant type
 void setup()
 {
-  // We no longer need to manage pin 13 here; the library does it.
   
   // Open serial communications and wait for port to open:
   Serial.begin(57600); //serial port to computer
@@ -43,12 +47,58 @@ void setup()
   // Initialize DHT sensor
   dht.begin();
   
-  initialize_radio();
+  initialize_radio(); // connection to lorawan TTN
 
   //transmit a startup message
   myLora.tx("Smart Plant Monitor Start (Lib Version)");
+
+  // --- NEW: Setup Mode Loop ---
+  // This loop will run until we get a valid plant type
+  // from a downlink message.
+  Serial.println("Entering Setup Mode. Waiting for Plant Type downlink...");
+
+  while (plantType == 0)
+  {
+    // 1. Get a fake battery value for our ping
+    uint8_t fakeBattery = 99; // Using 99% to indicate "setup"
+    
+    // 2. Call the setup ping. This function blocks, sends,
+    //    and listens for a downlink response.
+    String downlink = transmitter.sendSetupPing(fakeBattery);
+
+    // 3. Check if we received a downlink
+    if (downlink.length() > 0)
+    {
+      Serial.print("Downlink received: ");
+      Serial.println(downlink);
+
+      // Convert the received HEX string (e.g., "01") to an integer
+      // The "16" at the end means "base 16" (hexadecimal).
+      long plantId = strtol(downlink.c_str(), NULL, 16);
+
+      if (plantId >= 1 && plantId <= 4)
+      {
+        // Success! We got a valid plant type.
+        plantType = (int)plantId;
+        Serial.print("Plant Type set to: ");
+        Serial.println(plantType);
+        Serial.println("Setup complete. Starting Operating Mode.");
+      }
+      else
+      {
+        Serial.println("Invalid downlink. Retrying...");
+      }
+    }
+    else
+    {
+      // No downlink received. Wait 30 seconds and try again.
+      Serial.println("No downlink. Retrying in 30 seconds...");
+      delay(30000); // 30 second wait
+    }
+  }
 }
 
+// function for lorawan intialization
 void initialize_radio()
 {
   //reset rn2483
@@ -113,10 +163,9 @@ void initialize_radio()
 
 }
 
-// The sendSensorData function is GONE from this file.
-// The led_on and led_off functions are GONE from this file.
-
 // the loop routine runs over and over again forever:
+// This function will only be called AFTER setup() is complete,
+// meaning plantType is already set (1-4).
 void loop()
 {
   // 1. Read REAL sensor data (This logic will be in sensor.h)
@@ -145,5 +194,7 @@ void loop()
   transmitter.sendSensorData(humidity_int, temperature_int, fakeSoil, fakeLight, fakeBattery);
   
   // 5. Wait for the next cycle
-  delay(60000); 
+  // User requested 10 minutes (10 * 60 * 1000)
+  Serial.println("Data sent. Sleeping for 10 minutes...");
+  delay(600000); 
 }

@@ -13,7 +13,7 @@ LoRaTransmitter::LoRaTransmitter(rn2xx3 &loraModule) : _lora(loraModule)
   digitalWrite(_ledPin, LOW); // Start with it off
 }
 
-// sendSensorData implementation
+// sendSensorData implementation (Operating Mode)
 // This is the same logic from your old .ino file, but now it's part of the class.
 void LoRaTransmitter::sendSensorData(uint8_t humidity, int8_t temperature, uint8_t soil, uint8_t light, uint8_t battery)
 {
@@ -43,10 +43,37 @@ void LoRaTransmitter::sendSensorData(uint8_t humidity, int8_t temperature, uint8
   Serial.println(F(" %"));
 
   // Send the binary payload using our private reference _lora
+  // Note: This txBytes does not check for a downlink, just sends.
   _lora.txBytes(payload, sizeof(payload)); 
 
   led_off();
 }
+
+// NEW: sendSetupPing implementation (Setup Mode)
+String LoRaTransmitter::sendSetupPing(uint8_t battery)
+{
+  led_on();
+
+  // --- Payload Preparation ---
+  // We only send 1 byte for the setup ping
+  byte payload[1];
+  payload[0] = battery;
+
+  Serial.print(F("Sending setup ping (from Lib): Batt: "));
+  Serial.print(payload[0]);
+  Serial.println(F(" %... Awaiting downlink..."));
+
+  // Send the binary payload AND wait for a response
+  // This is a blocking call. If a downlink is available,
+  // the string will be returned. Otherwise, it's empty.
+  String downlink_response = _lora.txBytes(payload, sizeof(payload));
+
+  led_off();
+
+  // Return the response (will be empty if no downlink)
+  return downlink_response;
+}
+
 
 // --- Private LED Functions ---
 
