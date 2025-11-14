@@ -5,11 +5,16 @@
 
 class SoilMoistureSensor {
   public:
-    SoilMoistureSensor(int pin, int samples = 10); // Constructor: pin + number of averaged samples
-    int readAverage();                             // Returns the average moisture reading (0–1023)
+    SoilMoistureSensor(int pin, int samples = 10); // Constructor
+
+    int readAverage();                             // Returns average moisture value
+    void setThresholdLevel(int level);             // Sets threshold by level (1,2,3)
+    bool isAboveThreshold();                       // Returns true if above threshold
+
   private:
-    int _pin;       // analog input pin
-    int _samples;   // number of samples for averaging
+    int _pin;
+    int _samples;
+    int _threshold;
 };
 
 #endif

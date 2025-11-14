@@ -20,4 +20,10 @@ void DHTSensor_Init();
 // Reads the sensor values and returns a DHTData struct
 DHTData DHTSensor_Read();
 
+void DHTSensor_setTempThresholdLevel(int level);
+void DHTSensor_setHumidityThresholdLevel(int level);
+
+bool DHTSensor_isTempAboveThreshold();
+bool DHTSensor_isHumidityAboveThreshold();
+
 #endif
