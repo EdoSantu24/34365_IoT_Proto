@@ -36,7 +36,7 @@ DHTData DHTSensor_Read() {
 }
 
 // -------------------------------------------------
-// NEW: Set temperature threshold by level
+// Set temperature threshold by level
 // -------------------------------------------------
 void DHTSensor_setTempThresholdLevel(int level) {
   switch (level) {
@@ -60,14 +60,14 @@ void DHTSensor_setHumidityThresholdLevel(int level) {
 }
 
 // -------------------------------------------------
-// NEW: Check if temperature is above threshold
+// Check if temperature is above threshold
 // -------------------------------------------------
 bool DHTSensor_isTempAboveThreshold() {
   return (lastReading.valid && lastReading.temperature > tempThreshold);
 }
 
 // -------------------------------------------------
-// NEW: Check if humidity is above threshold
+// Check if humidity is above threshold
 // -------------------------------------------------
 bool DHTSensor_isHumidityAboveThreshold() {
   return (lastReading.valid && lastReading.humidity > humidThreshold);
