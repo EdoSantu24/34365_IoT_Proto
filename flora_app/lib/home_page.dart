@@ -113,18 +113,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// Updates the local state when a plant type is changed in settings.
-  /// Renames the key in all state maps from oldName to newName.
   void _handlePlantTypeChanged(String oldName, String newName) {
     if (oldName == newName) return;
 
     setState(() {
-      // 1. Update the main device mapping
       final deviceId = _plantDevices.remove(oldName);
       if (deviceId != null) {
         _plantDevices[newName] = deviceId;
       }
 
-      // 2. Transfer all sensor data to the new key
       if (_temperatures.containsKey(oldName)) {
         _temperatures[newName] = _temperatures.remove(oldName)!;
       }
@@ -145,12 +142,10 @@ class _HomePageState extends State<HomePage> {
       }
     });
 
-    // 3. Re-check thresholds for the new plant type
     _checkThresholds(newName);
   }
 
   void _checkThresholds(String plantName) {
-    // If we don't have specific thresholds for this plant name, define defaults or skip
     Map<String, List<double>> thresholds;
     
     if (_plantThresholds.containsKey(plantName)) {
@@ -167,7 +162,7 @@ class _HomePageState extends State<HomePage> {
 
     List<Widget> alertWidgets = [];
 
-    // Helper to check values
+    // Check values
     void checkValue(String type, double value, String name, String unit) {
       if (!thresholds.containsKey(type)) return;
       final min = thresholds[type]![0];
@@ -202,7 +197,7 @@ class _HomePageState extends State<HomePage> {
       }
     }
 
-    // Only check if we have data (not 0.0 default)
+    // Only check if we have data
     if (_temperatures[plantName] != 0.0) checkValue('Temp', _temperatures[plantName]!, 'temperature', 'ºC');
     if (_humidities[plantName] != 0.0) checkValue('Hum', _humidities[plantName]!, 'humidity in the atmosphere', '%');
     if (_soilHumidities[plantName] != 0.0) checkValue('Soil', _soilHumidities[plantName]!, 'water', '%');
@@ -322,7 +317,6 @@ class _HomePageState extends State<HomePage> {
               ),
 
               // Dynamically build the list of PlantInfoCards
-              // based on the _plantDevices map.
               ..._plantDevices.entries.map((entry) {
                 final String plantName = entry.key;
                 final String deviceId = entry.value;

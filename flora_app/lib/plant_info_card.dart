@@ -66,7 +66,7 @@ class PlantInfoCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Sensor readings (row 1)
+            // Row 1
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -77,7 +77,7 @@ class PlantInfoCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Sensor readings (row 2)
+            // Row 2
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -130,7 +130,6 @@ class PlantInfoCard extends StatelessWidget {
     );
   }
 
-  /// Builds a small column to display a sensor reading.
   Widget _buildInfoColumn(String title, String value) {
     return Column(
       children: [

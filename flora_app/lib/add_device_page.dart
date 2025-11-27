@@ -22,7 +22,6 @@ class _AddDevicePageState extends State<AddDevicePage> {
   final Map<String, int> _plantTypes = {
     'Cactus': 1,
     'Monstera': 2,
-    //Add more
   };
   String? _selectedPlantName;
 
@@ -95,7 +94,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
             backgroundColor: Colors.green,
           ),
         );
-        // Go back to the home page after successfully adding a device
+        // Go back to the home page
         Navigator.of(context).pop();
       }
     } catch (e) {
@@ -113,7 +112,6 @@ class _AddDevicePageState extends State<AddDevicePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Get the top padding (status bar height) to prevent overlap
     final double topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 16.0;
 
     return Scaffold(

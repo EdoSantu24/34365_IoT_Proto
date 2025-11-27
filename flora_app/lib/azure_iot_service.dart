@@ -21,19 +21,16 @@ class AzureIoTService {
 
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
-      
-      // Robust parsing to handle both simple values and list-wrapped values
+
       if (body is Map && body.containsKey('value')) {
         final dynamic valueField = body['value'];
 
         if (valueField is List && valueField.isNotEmpty) {
-          // Handles responses like: {"value": [{"value": 35, ...}]}
           final dynamic firstElement = valueField[0];
           if (firstElement is Map && firstElement.containsKey('value')) {
             return {telemetryName: firstElement['value']};
           }
         } else if (valueField is num) {
-          // Handles simple responses like: {"value": 35}
           return {telemetryName: valueField};
         }
       }
@@ -43,7 +40,7 @@ class AzureIoTService {
     }
   }
 
-  /// Fetches a list of all device IDs from Azure IoT Central.
+  /// Retrive a list of all device IDs from Azure IoT Central.
   Future<List<String>> getDevices() async {
     final url = Uri.https(
       '$_subdomain.azureiotcentral.com',

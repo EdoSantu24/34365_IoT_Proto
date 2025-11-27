@@ -22,8 +22,8 @@ class _SettingsPageState extends State<SettingsPage> {
   
   // Map for plant types: Name -> ID
   final Map<String, int> _plantTypes = {
-    'Cactus': 0,
-    'Monstera': 1,
+    'Cactus': 1,
+    'Monstera': 2,
   };
   String? _selectedPlantName;
   bool _isLoading = false;
@@ -72,7 +72,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Fix for overlapping titles: Add status bar height + toolbar height
     final double topPadding = MediaQuery.of(context).padding.top + kToolbarHeight + 16.0;
 
     return Scaffold(
@@ -86,7 +85,6 @@ class _SettingsPageState extends State<SettingsPage> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background image matching the rest of the app
           Image.asset(
             'assets/FloRa_background.jpg',
             fit: BoxFit.cover,

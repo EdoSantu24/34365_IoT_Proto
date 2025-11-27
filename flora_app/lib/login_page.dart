@@ -32,10 +32,7 @@ class _LoginPageState extends State<LoginPage> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _loading = true);
-    // Simulate an API call.
     await Future.delayed(const Duration(seconds: 1));
-
-    // TODO: Replace with your actual authentication logic.
     final success = _userCtrl.text == 'demo' && _passCtrl.text == 'demo123';
 
     setState(() => _loading = false);
@@ -100,7 +97,6 @@ class _LoginPageState extends State<LoginPage> {
             Image.asset(
               'assets/FloRa_background.jpg',
               fit: BoxFit.cover,
-              // Apply a color filter to make the image less prominent.
               color: Colors.white.withOpacity(0.5),
               colorBlendMode: BlendMode.darken,
             ),
