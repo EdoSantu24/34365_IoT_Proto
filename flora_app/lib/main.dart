@@ -6,7 +6,6 @@ void main() {
   runApp(const FloRaApp());
 }
 
-/// The root widget of the application.
 class FloRaApp extends StatelessWidget {
   /// Creates a [FloRaApp].
   const FloRaApp({super.key});

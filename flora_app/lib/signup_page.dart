@@ -35,10 +35,8 @@ class _SignUpPageState extends State<SignUpPage> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _loading = true);
-    // Simulate an API call.
     await Future.delayed(const Duration(seconds: 1));
 
-    // TODO: Integrate your backend/Firebase here.
     setState(() => _loading = false);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -94,7 +92,6 @@ class _SignUpPageState extends State<SignUpPage> {
             Image.asset(
               'assets/FloRa_background.jpg',
               fit: BoxFit.cover,
-              // Apply a color filter to make the image less prominent.
               color: Colors.white.withOpacity(0.5),
               colorBlendMode: BlendMode.darken,
             ),

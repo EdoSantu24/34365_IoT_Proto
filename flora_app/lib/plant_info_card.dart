@@ -4,18 +4,23 @@ import 'settings_page.dart';
 /// A card widget to display information about a plant.
 class PlantInfoCard extends StatelessWidget {
   final String plantName;
+  // Device ID is needed for settings configuration
+  final String? deviceId;
   final double temperature;
-  final int humidity1;
+  final double humidity1;
   final int humidity2;
   final int light;
   final int battery;
   final bool isDeviceOn;
   final ValueChanged<bool> onStatusChanged;
+  final ValueChanged<String>? onPlantTypeChanged; // Callback for when plant type changes
+  final VoidCallback? onReload;
 
   /// Creates a [PlantInfoCard].
   const PlantInfoCard({
     super.key,
     required this.plantName,
+    this.deviceId,
     required this.temperature,
     required this.humidity1,
     required this.humidity2,
@@ -23,6 +28,8 @@ class PlantInfoCard extends StatelessWidget {
     required this.battery,
     required this.isDeviceOn,
     required this.onStatusChanged,
+    this.onPlantTypeChanged,
+    this.onReload,
   });
 
   @override
@@ -42,7 +49,7 @@ class PlantInfoCard extends StatelessWidget {
                 Text(
                   plantName,
                   style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                      fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -59,18 +66,18 @@ class PlantInfoCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Sensor readings (row 1)
+            // Row 1
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildInfoColumn('Temperature', '$temperature ºC'),
-                _buildInfoColumn('Humidity 1', '$humidity1 %'),
+                _buildInfoColumn('Humidity 1', '${humidity1.toStringAsFixed(1)} %'),
                 _buildInfoColumn('Humidity 2', '$humidity2 %'),
               ],
             ),
             const SizedBox(height: 16),
 
-            // Sensor readings (row 2)
+            // Row 2
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -85,21 +92,32 @@ class PlantInfoCard extends StatelessWidget {
               children: [
                 IconButton(
                   icon: const Icon(Icons.refresh, color: Colors.white),
-                  onPressed: () {
-                    // TODO: Implement reload functionality
-                  },
+                  onPressed: onReload,
                   tooltip: 'Reload',
                 ),
                 IconButton(
                   icon: const Icon(Icons.settings, color: Colors.white),
                   onPressed: () async {
-                    final newStatus = await Navigator.of(context).push<bool>(
+                    if (deviceId == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('No device ID associated with this plant.')),
+                      );
+                      return;
+                    }
+                    
+                    // Wait for the settings page to return a new plant type name
+                    final newPlantType = await Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => SettingsPage(isDeviceOn: isDeviceOn),
+                        builder: (_) => SettingsPage(
+                          deviceId: deviceId!,
+                          currentPlantName: plantName,
+                        ),
                       ),
                     );
-                    if (newStatus != null) {
-                      onStatusChanged(newStatus);
+                    
+                    // If a new type was returned, notify the parent to update
+                    if (newPlantType != null && newPlantType is String && onPlantTypeChanged != null) {
+                      onPlantTypeChanged!(newPlantType);
                     }
                   },
                   tooltip: 'Settings',
@@ -112,7 +130,6 @@ class PlantInfoCard extends StatelessWidget {
     );
   }
 
-  /// Builds a small column to display a sensor reading.
   Widget _buildInfoColumn(String title, String value) {
     return Column(
       children: [
