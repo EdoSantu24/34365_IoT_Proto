@@ -71,8 +71,8 @@ class PlantInfoCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildInfoColumn('Temperature', '$temperature ºC'),
-                _buildInfoColumn('Humidity 1', '${humidity1.toStringAsFixed(1)} %'),
-                _buildInfoColumn('Humidity 2', '$humidity2 %'),
+                _buildInfoColumn('Humidity', '${humidity1.toStringAsFixed(1)} %'),
+                _buildInfoColumn('Soil', '$humidity2 %'),
               ],
             ),
             const SizedBox(height: 16),

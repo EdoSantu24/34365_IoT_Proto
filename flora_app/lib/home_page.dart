@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
       'Temp': [18.0, 32.0],
       'Hum': [20.0, 50.0],
       'Soil': [10.0, 15.0],
-      'Light': [2000.0, 5000.0],
+      'Light': [500.0, 1000.0],
     },
   };
 
@@ -163,16 +163,16 @@ class _HomePageState extends State<HomePage> {
     List<Widget> alertWidgets = [];
 
     // Check values
-    void checkValue(String type, double value, String name, String unit) {
+    void checkValue(String type, double value, String name, String unit, {bool invertLogic = false}) {
       if (!thresholds.containsKey(type)) return;
       final min = thresholds[type]![0];
       final max = thresholds[type]![1];
       
       String message = '';
       if (value < min) {
-        message = 'needs more $name.';
+        message = invertLogic ? 'needs less $name.' : 'needs more $name.';
       } else if (value > max) {
-        message = 'needs less $name.';
+        message = invertLogic ? 'needs more $name.' : 'needs less $name.';
       }
 
       if (message.isNotEmpty) {
@@ -200,7 +200,7 @@ class _HomePageState extends State<HomePage> {
     // Only check if we have data
     if (_temperatures[plantName] != 0.0) checkValue('Temp', _temperatures[plantName]!, 'temperature', 'ºC');
     if (_humidities[plantName] != 0.0) checkValue('Hum', _humidities[plantName]!, 'humidity in the atmosphere', '%');
-    if (_soilHumidities[plantName] != 0.0) checkValue('Soil', _soilHumidities[plantName]!, 'water', '%');
+    if (_soilHumidities[plantName] != 0.0) checkValue('Soil', _soilHumidities[plantName]!, 'water', '%', invertLogic: true);
     if (_lights[plantName] != 0.0) checkValue('Light', _lights[plantName]!, 'light', 'lux');
 
     if (alertWidgets.isNotEmpty) {
@@ -257,7 +257,8 @@ class _HomePageState extends State<HomePage> {
             _soilHumidities[plantName] = (soilResult['Soil'] as num).toDouble();
           }
           if (lightResult.containsKey('Light')) {
-            _lights[plantName] = (lightResult['Light'] as num).toDouble();
+            // Multiply by 10.24 as requested
+            _lights[plantName] = (lightResult['Light'] as num) * 10.24;
           }
           if (batResult.containsKey('Bat')) {
             _bat[plantName] = (batResult['Bat'] as num).toDouble();
