@@ -1,16 +1,15 @@
-# flora_app
+# Flora App
 
-A new Flutter project.
+## Overview  
+Flora App is part of the “34365_IoT_Proto” project. A simple mobile/web application designed to interface with IoT-based plant smart sensor monitor to help in the plant care.
 
-## Getting Started
+## Features  
+- Real-time sensor data display (soil moisture, light level, temperature, etc.)
+- Alert system that notifies the user when a plant requires attention and specifies what it needs (e.g., needs water, insufficient light, etc.)
+- Support for multiple plants/devices, allowing users to track different plants independently
+- It allows to set up the plant type
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Prerequisites  
+- Android Studio installed
+- Flutter SDK configured and added to your PATH
+- A compatible Android phone or an Android emulator
